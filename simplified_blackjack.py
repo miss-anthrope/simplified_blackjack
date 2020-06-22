@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 #Start by importing the random module for dealing.
 import random
 
@@ -235,9 +232,6 @@ while True:
 
         break
 
-
-
-# In[ ]:
 
 
 
