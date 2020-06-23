@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-#Start by importing the random module for dealing.
+#Start by importing the random module for dealing a hand.
 import random
 
-#Define global variables and the boolean condition to make the game run
+#Define global variables, dictionary, and the boolean condition to make the game run
 suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
 ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King','Ace')
 values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8, 'Nine':9, 'Ten':10, 'Jack':10, 'Queen':10, 'King':10, 'Ace':11}
 
 playing = True
 
-#Define the Card class
+#Define the Card class. It needs to include the suit and rank of the cards.
 class Card():
     
     def __init__(self,suit,rank):
@@ -51,26 +51,27 @@ class Hand:
         self.aces = 0    # add an attribute to keep track of aces
     
     def add_card(self,card):
-        self.cards.append(card) #from Deck.deak --> single Card(suit,rank)
+        self.cards.append(card) #from Deck.deck --> single Card(suit,rank)
         self.value += values[card.rank]
         
-        #tracking aces
+        #tracking the aces in your Hand
         if card.rank == 'Ace':
             self.aces += 1
     
     def adjust_for_ace(self):
         
-        #Ace is already considered to be an 11
+        #Ace is already considered to be an 11 set above
         #If total value > 21 and we still have an Ace, change the Ace to = 1 instead
         while self.value > 21 and self.aces:
             self.value -= 10
             self.aces -= 1
             
 #Considering the money, we start with a total of 100 and add or subtract the bet from that.
+#This might eventually have a little loop put into it to account for a rolling bankroll, but this was easier for now.
 class Chips:
     
     def __init__(self,total=100):
-        self.total = total  # This can be set to a default value or supplied by a user input
+        self.total = total  # This can be set to a default value or supplied by a user input, but we chose to use an input.
         self.bet = 0
         
     def win_bet(self):
@@ -79,7 +80,7 @@ class Chips:
     def lose_bet(self):
         self.total -= self.bet
         
-#Define the game functions now
+#Define the game functions here in a While loop using try/except
 def take_bet(chips):
     
     while True:
@@ -103,7 +104,7 @@ def hit(deck,hand):
 #Ask the player if they want to hit or stand
 #This is just one method that made sense and seemed clear to me.
 def hit_or_stand(deck,hand):
-    global playing  # to control an upcoming while loop
+    global playing  # to control the upcoming while loop
     
     while True:
         x = input("Hit or stand? Enter h or s. \n")
@@ -136,7 +137,7 @@ def show_all(player,dealer):
     print("Player's Hand", *player.cards, sep = '\n ')
     print("Player's Hand = ", player.value)
     
-#Define winning, losing, and tying conditions
+#Define winning, losing, and tie conditions
 def player_busts(player,dealer,chips):
     print("Sorry pal, yer busted.")
     chips.lose_bet()
@@ -159,11 +160,11 @@ def push(player,dealer):
 #This is the long part - game logic.
 
 while True:
-    # Print an opening statement
+    #Print an opening statement
     print("Howdy! Welcome to Blackjack. Yer bankroll is 100 chips. This will be reset as your total every game.")
 
     
-    # Create & shuffle the deck, deal two cards to each player
+    #Create & shuffle the deck, deal two cards to each player
     deck = Deck()
     deck.shuffle()
     
@@ -175,40 +176,40 @@ while True:
     dealer_hand.add_card(deck.deal())
     dealer_hand.add_card(deck.deal())
 
-    # Set up the Player's chips
+    #Set up the Player's chips
     player_chips = Chips()    
     
-    # Prompt the Player for their bet
+    #Prompt the Player for their bet
     take_bet(player_chips)
     
-    # Show cards (but keep one dealer card hidden)
+    #Show cards (but keep one dealer card hidden)
     show_some(player_hand,dealer_hand)
     
-    while playing:  # recall this variable from our hit_or_stand function
+    while playing:  #Recall this variable from our hit_or_stand function
         
-        # Prompt for Player to Hit or Stand
+        #Prompt for Player to Hit or Stand
         hit_or_stand(deck,player_hand)
          
-        # Show cards (but keep one dealer card hidden)
+        #Show cards (but keep one dealer card hidden)
         show_some(player_hand,dealer_hand)
         
-        # If player's hand exceeds 21, run player_busts() and break out of loop
+        #If player's hand exceeds 21, run player_busts() and break out of loop
         if player_hand.value > 21:
             player_busts(player_hand,dealer_hand,player_chips)
     
             break
 
-    # If Player hasn't busted, play Dealer's hand until Dealer reaches 17
-    #This is a casino rule called "soft 17"
+    #If Player hasn't busted, play Dealer's hand until Dealer reaches 17
+    #This is a casino rule called "soft 17."
     if player_hand.value <= 21:
         
         while dealer_hand.value < 17:
             hit(deck,dealer_hand)
      
-        # Show all cards
+        #Show all cards
         show_all(player_hand,dealer_hand)
     
-        # Run different winning scenarios
+        #Run different ending scenarios
         if dealer_hand.value > 21:
             dealer_busts(player_hand,dealer_hand,player_chips)
         elif dealer_hand.value > player_hand.value:
@@ -218,10 +219,10 @@ while True:
         else:
             push(player_hand,dealer_hand)
            
-    # Inform Player of their chips total 
+    #Inform Player of their chips total 
     print("\n Your total bankroll for this game is: {}".format(player_chips.total))
     
-    # Ask to play again
+    #Ask to play again
     new_game = input("Go another round, Pardner? y/n \n")
     
     if new_game[0].lower() == 'y':
